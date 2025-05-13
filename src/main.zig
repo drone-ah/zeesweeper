@@ -19,6 +19,7 @@ pub fn main() anyerror!void {
     }
 
     var game = try ZeeSweeper.init(allocator, screenWidth, screenHeight, 30);
+    game.populate();
     defer game.deinit(allocator);
 
     rl.initWindow(screenWidth, screenHeight, "ZeeSweeper");

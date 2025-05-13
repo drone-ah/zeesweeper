@@ -5,6 +5,8 @@ const Self = @This();
 
 const num_zees = 10;
 
+rows: usize,
+cols: usize,
 cells: [][]Cell,
 
 pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Self {
@@ -36,8 +38,24 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
     }
 
     return .{
+        .rows = rows,
+        .cols = cols,
         .cells = cells,
     };
+}
+
+pub fn populate(self: *Self) void {
+    self.countZees();
+}
+
+fn countZees(self: *Self) void {
+    for (self.cells) |*col| {
+        for (col.*) |*cell| {
+            if (!cell.zee) {
+                cell.countZees(self.cells);
+            }
+        }
+    }
 }
 
 pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {

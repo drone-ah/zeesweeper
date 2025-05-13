@@ -2,16 +2,17 @@ const std = @import("std");
 const rl = @import("raylib");
 const Self = @This();
 
-row: u16,
-col: u16,
-size: u16,
+row: i16,
+col: i16,
+size: i16,
 zee: bool = false,
+neighbours: u8 = 0,
 revealed: bool = false,
 marked: bool = false,
 
 pub fn draw(self: *const Self) void {
-    const x: u16 = self.col * self.size;
-    const y: u16 = self.row * self.size;
+    const x: i16 = self.col * self.size;
+    const y: i16 = self.row * self.size;
 
     rl.drawRectangleLines(x, y, self.size, self.size, .gray);
 
@@ -22,4 +23,36 @@ pub fn draw(self: *const Self) void {
     if (self.zee) {
         rl.drawCircle(centerx, centery, @floatFromInt(radius), .orange);
     }
+
+    if (self.neighbours > 0) {
+        var buf: [3]u8 = undefined;
+        const text = std.fmt.bufPrintZ(&buf, "{d}", .{self.neighbours}) catch {
+            std.debug.print("Error formatting number\n", .{});
+            return;
+        };
+
+        rl.drawText(std.mem.span(text.ptr), centerx, y + 5, 24, .blue);
+    }
+}
+
+pub fn countZees(self: *Self, cells: [][]Self) void {
+    var zees: u8 = 0;
+
+    var i: i8 = -2;
+    while (i < 1) {
+        i += 1;
+        var j: i8 = -2;
+        while (j < 1) {
+            j += 1;
+            const x = self.col + i;
+            if (x < 0 or x >= cells.len) continue;
+
+            const y = self.row + j;
+            if (y < 0 or y >= cells[0].len) continue;
+
+            if (cells[@intCast(x)][@intCast(y)].zee) zees += 1;
+        }
+    }
+
+    self.neighbours = zees;
 }
