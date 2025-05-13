@@ -32,6 +32,14 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
     };
 }
 
+pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
+    for (self.cells) |col| {
+        allocator.free(col);
+    }
+
+    allocator.free(self.cells);
+}
+
 pub fn populate(self: *Self) void {
     self.fillZees();
     self.countZees();
@@ -59,14 +67,6 @@ fn countZees(self: *Self) void {
             }
         }
     }
-}
-
-pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
-    for (self.cells) |col| {
-        allocator.free(col);
-    }
-
-    allocator.free(self.cells);
 }
 
 pub fn draw(self: *Self) void {
