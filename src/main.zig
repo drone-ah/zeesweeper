@@ -1,14 +1,27 @@
 // raylib-zig (c) Nikolas Wipper 2023
-
+const std = @import("std");
 const rl = @import("raylib");
+
+const ZeeSweeper = @import("zeesweeper.zig");
 
 pub fn main() anyerror!void {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const screenWidth = 800;
-    const screenHeight = 450;
+    const screenWidth = 400;
+    const screenHeight = 400;
 
-    rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    defer {
+        const deinit_status = gpa.deinit();
+        //fail test; can't try in defer as defer is executed after we return
+        if (deinit_status == .leak) @panic("MEM LEAK!!!");
+    }
+
+    var game = try ZeeSweeper.init(allocator, screenWidth, screenHeight, 30);
+    defer game.deinit(allocator);
+
+    rl.initWindow(screenWidth, screenHeight, "ZeeSweeper");
     defer rl.closeWindow(); // Close window and OpenGL context
 
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
@@ -27,8 +40,8 @@ pub fn main() anyerror!void {
         defer rl.endDrawing();
 
         rl.clearBackground(.white);
+        game.draw();
 
-        rl.drawText("Congrats! You created your first window!", 190, 200, 20, .light_gray);
         //----------------------------------------------------------------------------------
     }
 }
