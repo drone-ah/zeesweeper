@@ -72,11 +72,22 @@ fn countZees(self: *Self) void {
     }
 }
 
+fn gameOver(self: *Self) void {
+    for (self.cells) |*col| {
+        for (col.*) |*cell| {
+            cell.revealed = true;
+        }
+    }
+}
+
 pub fn draw(self: *Self) void {
     if (rl.isMouseButtonPressed(.left)) {
         const col: usize = @intCast(@divFloor(rl.getMouseX(), self.size));
         const row: usize = @intCast(@divFloor(rl.getMouseY(), self.size));
         self.cells[col][row].reveal(self.cells);
+        if (self.cells[col][row].zee) {
+            self.gameOver();
+        }
     }
 
     for (self.cells) |cols| {
