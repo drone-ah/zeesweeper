@@ -14,25 +14,34 @@ pub fn draw(self: *const Self) void {
     const x: i16 = self.col * self.size;
     const y: i16 = self.row * self.size;
 
-    rl.drawRectangleLines(x, y, self.size, self.size, .gray);
+    const colour = if (self.revealed) rl.Color.gray else rl.Color.dark_gray;
 
-    const radius = @divFloor(self.size, 2);
-    const centerx = x + radius;
-    const centery = y + radius;
+    rl.drawRectangle(x, y, self.size, self.size, colour);
+    rl.drawRectangleLines(x, y, self.size, self.size, .white);
 
-    if (self.zee) {
-        rl.drawCircle(centerx, centery, @floatFromInt(radius), .orange);
+    if (self.revealed) {
+        const radius = @divFloor(self.size, 2);
+        const centerx = x + radius;
+        const centery = y + radius;
+
+        if (self.zee) {
+            rl.drawCircle(centerx, centery, @floatFromInt(radius), .orange);
+        }
+
+        if (self.neighbours > 0) {
+            var buf: [3]u8 = undefined;
+            const text = std.fmt.bufPrintZ(&buf, "{d}", .{self.neighbours}) catch {
+                std.debug.print("Error formatting number\n", .{});
+                return;
+            };
+
+            rl.drawText(std.mem.span(text.ptr), centerx, y + 5, 24, .blue);
+        }
     }
+}
 
-    if (self.neighbours > 0) {
-        var buf: [3]u8 = undefined;
-        const text = std.fmt.bufPrintZ(&buf, "{d}", .{self.neighbours}) catch {
-            std.debug.print("Error formatting number\n", .{});
-            return;
-        };
-
-        rl.drawText(std.mem.span(text.ptr), centerx, y + 5, 24, .blue);
-    }
+pub fn reveal(self: *Self, _: [][]Self) void {
+    self.revealed = true;
 }
 
 pub fn countZees(self: *Self, cells: [][]Self) void {

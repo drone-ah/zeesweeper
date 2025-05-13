@@ -1,3 +1,4 @@
+const rl = @import("raylib");
 const std = @import("std");
 const Cell = @import("cell.zig");
 
@@ -7,6 +8,7 @@ const num_zees = 10;
 
 rows: usize,
 cols: usize,
+size: u8,
 cells: [][]Cell,
 
 pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Self {
@@ -29,6 +31,7 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
         .rows = rows,
         .cols = cols,
         .cells = cells,
+        .size = size,
     };
 }
 
@@ -70,6 +73,12 @@ fn countZees(self: *Self) void {
 }
 
 pub fn draw(self: *Self) void {
+    if (rl.isMouseButtonPressed(.left)) {
+        const col: usize = @intCast(@divFloor(rl.getMouseX(), self.size));
+        const row: usize = @intCast(@divFloor(rl.getMouseY(), self.size));
+        self.cells[col][row].reveal(self.cells);
+    }
+
     for (self.cells) |cols| {
         for (cols) |cell| {
             cell.draw();
