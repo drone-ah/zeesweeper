@@ -3,6 +3,8 @@ const Cell = @import("cell.zig");
 
 const Self = @This();
 
+const num_zees = 10;
+
 cells: [][]Cell,
 
 pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Self {
@@ -18,6 +20,18 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
                 .row = @intCast(y),
                 .size = size,
             };
+        }
+    }
+
+    const rnd = std.crypto.random;
+    var zees: usize = 0;
+    while (zees < num_zees) {
+        const x = rnd.uintAtMost(u16, rows - 1);
+        const y = rnd.uintAtMost(u16, cols - 1);
+
+        if (!cells[x][y].zee) {
+            cells[x][y].zee = true;
+            zees += 1;
         }
     }
 

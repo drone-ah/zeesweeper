@@ -10,5 +10,16 @@ revealed: bool = false,
 marked: bool = false,
 
 pub fn draw(self: *const Self) void {
-    rl.drawRectangleLines(self.col * self.size, self.row * self.size, self.size, self.size, .gray);
+    const x: u16 = self.col * self.size;
+    const y: u16 = self.row * self.size;
+
+    rl.drawRectangleLines(x, y, self.size, self.size, .gray);
+
+    const radius = @divFloor(self.size, 2);
+    const centerx = x + radius;
+    const centery = y + radius;
+
+    if (self.zee) {
+        rl.drawCircle(centerx, centery, @floatFromInt(radius), .orange);
+    }
 }
