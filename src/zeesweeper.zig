@@ -25,18 +25,6 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
         }
     }
 
-    const rnd = std.crypto.random;
-    var zees: usize = 0;
-    while (zees < num_zees) {
-        const x = rnd.uintAtMost(u16, rows - 1);
-        const y = rnd.uintAtMost(u16, cols - 1);
-
-        if (!cells[x][y].zee) {
-            cells[x][y].zee = true;
-            zees += 1;
-        }
-    }
-
     return .{
         .rows = rows,
         .cols = cols,
@@ -45,7 +33,22 @@ pub fn init(allocator: std.mem.Allocator, width: u16, height: u16, size: u8) !Se
 }
 
 pub fn populate(self: *Self) void {
+    self.fillZees();
     self.countZees();
+}
+
+fn fillZees(self: *Self) void {
+    const rnd = std.crypto.random;
+    var zees: usize = 0;
+    while (zees < num_zees) {
+        const x = rnd.uintAtMost(u16, @intCast(self.rows - 1));
+        const y = rnd.uintAtMost(u16, @intCast(self.cols - 1));
+
+        if (!self.cells[x][y].zee) {
+            self.cells[x][y].zee = true;
+            zees += 1;
+        }
+    }
 }
 
 fn countZees(self: *Self) void {
