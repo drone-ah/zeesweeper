@@ -35,7 +35,7 @@ pub fn draw(self: *const Self) void {
                 return;
             };
 
-            rl.drawText(std.mem.span(text.ptr), centerx, y + 5, 24, .blue);
+            rl.drawText(std.mem.span(text.ptr), centerx, y + 5, 24, .black);
         }
     }
 }
