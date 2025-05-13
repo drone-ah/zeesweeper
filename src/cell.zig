@@ -40,8 +40,29 @@ pub fn draw(self: *const Self) void {
     }
 }
 
-pub fn reveal(self: *Self, _: [][]Self) void {
+pub fn reveal(self: *Self, cells: [][]Self) void {
+    if (self.revealed) return;
+
     self.revealed = true;
+
+    if (!self.zee and self.neighbours == 0) {
+        // flood fill neighbours
+        var i: i8 = -2;
+        while (i < 1) {
+            i += 1;
+            var j: i8 = -2;
+            while (j < 1) {
+                j += 1;
+                const x = self.col + i;
+                if (x < 0 or x >= cells.len) continue;
+
+                const y = self.row + j;
+                if (y < 0 or y >= cells[0].len) continue;
+
+                cells[@intCast(x)][@intCast(y)].reveal(cells);
+            }
+        }
+    }
 }
 
 pub fn countZees(self: *Self, cells: [][]Self) void {
